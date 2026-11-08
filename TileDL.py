@@ -1,6 +1,7 @@
 import os
+from math import cos, log, pi, tan
+
 import requests
-from math import log, tan, cos, pi
 from tqdm import tqdm
 
 # Define the bounding boxes and zoom levels. Below are random examples.
