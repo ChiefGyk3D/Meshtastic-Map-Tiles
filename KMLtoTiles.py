@@ -1,18 +1,20 @@
-import os
-import requests
 import argparse
+import os
 import warnings
+from math import cos, log, pi, tan
 from pathlib import Path
-from math import log, tan, cos, pi
+
+import requests
 from tqdm import tqdm
+
 with warnings.catch_warnings():
     # This is ugly but suppresses a warning about pretty-printing we don't care about
     warnings.simplefilter('ignore')
     from fastkml import kml
 
-from fastkml import Placemark, Point, LineString
+
+from fastkml import LineString, Placemark, Point
 from fastkml.utils import find_all as kml_find_all
-from typing import Dict, Tuple
 
 # Usage example:
 # python KMLtoTiles.py my_input.kml -k xx_yy_your_key_here -o ~/maps/outdoors -s outdoors -m 1000
@@ -37,10 +39,10 @@ def download_tile(outdir: Path, api_key: str, mapstyle: str, zoom: int, x:int, y
         else:
             print(f"Failed to download tile {zoom}/{x}/{y}: {response.status_code} {response.reason}")
 
-def expand_gps(lat, lon, latrgn, lonrgn) -> Tuple[float, float, float, float]:
+def expand_gps(lat, lon, latrgn, lonrgn) -> tuple[float, float, float, float]:
     return (lat - latrgn, lon - lonrgn, lat + latrgn, lon + lonrgn)
             
-def kml_to_regions(kmlfile: Path, latrgn: float = 0.1, lonrgn: float = 0.1) -> Dict[str, Tuple]:
+def kml_to_regions(kmlfile: Path, latrgn: float = 0.1, lonrgn: float = 0.1) -> dict[str, tuple]:
     resdict = dict()
     k = kml.KML.parse(kmlfile)
     pmarks = list(kml_find_all(k, of_type=Placemark))
@@ -63,7 +65,7 @@ def kml_to_regions(kmlfile: Path, latrgn: float = 0.1, lonrgn: float = 0.1) -> D
                     coord_idx += 1
     return resdict
 
-def download_tiles(regions: Dict[str, Tuple],
+def download_tiles(regions: dict[str, tuple],
                    outdir: Path, apikey: str,
                    mapstyle: str, maxtiles: int,
                    minzoom: int = 1, maxzoom: int = 12):
